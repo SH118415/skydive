@@ -92,11 +92,11 @@ func (sfa *Agent) feedFlowTable() {
 
 		// TODO use gopacket.NoCopy ? instead of gopacket.Default
 		p := gopacket.NewPacket(buf[:n], layers.LayerTypeSFlow, gopacket.DecodeOptions{NoCopy: true})
-		logging.GetLogger().Infof("value of gopacket %s", p)
+		logging.GetLogger().Debugf("value of gopacket %s", p)
 		sflowLayer := p.Layer(layers.LayerTypeSFlow)
 		sflowPacket, ok := sflowLayer.(*layers.SFlowDatagram)
-		logging.GetLogger().Infof("value of p %s", p)
-		logging.GetLogger().Infof("%d sample captured", sflowPacket.SampleCount)
+		//logging.GetLogger().Infof("value of p %s", p)
+		//logging.GetLogger().Infof("%d sample captured", sflowPacket.SampleCount)
 
 		if !ok {
 			logging.GetLogger().Errorf("Unable to decode sFlow packet: %s", p)
@@ -110,13 +110,14 @@ func (sfa *Agent) feedFlowTable() {
 				// records each generating Packets.
 				sfa.FlowTable.FeedWithSFlowSample(&sample, bpf)
 			}
-			var counters []layers.SFlowCounterSample
-			for _, sample := range sflowPacket.CounterSamples {
-				counters = append(counters, sample)
-			}
-			logging.GetLogger().Infof("counters= %v", counters)
+			//var counters []layers.SFlowCounterSample
+			//for _, sample := range sflowPacket.CounterSamples {
+			//counters = append(counters, sample)
+			//}
+			//logging.GetLogger().Infof("counters= %v", counters)
 			sfa.Graph.Lock()
-			sfa.Graph.AddMetadata(sfa.Node, "Sflow-Counters", counters)
+			//sfa.Graph.AddMetadata(sfa.Node, "Sflow-Counters", counters)
+			sfa.Graph.AddMetadata(sfa.Node, "Sflow-Counters", sflowPacket.CounterSamples)
 			sfa.Graph.Unlock()
 		}
 

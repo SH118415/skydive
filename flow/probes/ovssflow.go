@@ -203,7 +203,8 @@ func (o *OvsSFlowProbesHandler) RegisterProbeOnBridge(bridgeUUID string, tid str
 	}
 
 	addr := common.ServiceAddress{Addr: address, Port: 0}
-	agent, err := o.allocator.Alloc(bridgeUUID, probe.flowTable, capture.BPFFilter, headerSize, &addr, o.Node, o.Graph)
+	//agent, err := o.allocator.Alloc(bridgeUUID, probe.flowTable, capture.BPFFilter, headerSize, &addr, o.Node, o.Graph)
+	agent, err := o.allocator.Alloc(bridgeUUID, probe.flowTable, capture.BPFFilter, headerSize, &addr, n, o.Graph)
 	if err != nil && err != sflow.ErrAgentAlreadyAllocated {
 		return err
 	}
@@ -243,7 +244,7 @@ func (o *OvsSFlowProbesHandler) registerProbe(n *graph.Node, capture *types.Capt
 
 // RegisterProbe registers a probe on a graph node
 func (o *OvsSFlowProbesHandler) RegisterProbe(n *graph.Node, capture *types.Capture, e FlowProbeEventHandler) error {
-	o.Node = n
+	//o.Node = n
 	err := o.registerProbe(n, capture, e)
 	if err != nil {
 		go e.OnError(err)
