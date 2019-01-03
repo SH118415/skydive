@@ -90,6 +90,7 @@ func isGremlinExpr(v interface{}, param string) error {
 
 	tr := traversal.NewGremlinTraversalParser()
 	tr.AddTraversalExtension(ge.NewMetricsTraversalExtension())
+	tr.AddTraversalExtension(ge.NewSFlowMetricsTraversalExtension())
 	tr.AddTraversalExtension(ge.NewFlowTraversalExtension(nil, nil))
 	tr.AddTraversalExtension(ge.NewSocketsTraversalExtension())
 	tr.AddTraversalExtension(ge.NewRawPacketsTraversalExtension())

@@ -178,6 +178,25 @@ func (g *GremlinQueryHelper) GetInterfaceMetrics(query interface{}) (map[string]
 	return result[0], nil
 }
 
+//GetSFlowMetrics from Gremlin query
+func (g *GremlinQueryHelper) GetSFlowMetrics(query interface{}) (map[string][]*topology.SFlowMetric, error) {
+	data, err := g.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []map[string][]*topology.SFlowMetric
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, err
+	}
+
+	if len(result) == 0 {
+		return nil, nil
+	}
+
+	return result[0], nil
+}
+
 // GetFlowMetrics from Gremlin query
 func (g *GremlinQueryHelper) GetFlowMetrics(query interface{}) (map[string][]*flow.FlowMetric, error) {
 	data, err := g.Query(query)
@@ -220,6 +239,21 @@ func (g *GremlinQueryHelper) GetInterfaceMetric(query interface{}) (*topology.In
 	}
 
 	var result topology.InterfaceMetric
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
+// GetSFlowMetric from Gremlin query
+func (g *GremlinQueryHelper) GetSFlowMetric(query interface{}) (*topology.SFlowMetric, error) {
+	data, err := g.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	var result topology.SFlowMetric
 	if err := json.Unmarshal(data, &result); err != nil {
 		return nil, err
 	}
