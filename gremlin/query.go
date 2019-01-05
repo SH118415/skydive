@@ -192,6 +192,11 @@ func (q QueryString) Metrics() QueryString {
 	return q.newQueryString("Metrics")
 }
 
+// SFlowMetrics append a SFlowMetrics() operation to query
+func (q QueryString) SFlowMetrics() QueryString {
+	return q.newQueryString("SFlowMetrics")
+}
+
 // Sum append a Sum() operation to query
 func (q QueryString) Sum(list ...interface{}) QueryString {
 	return q.newQueryString("Sum", list...)
