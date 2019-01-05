@@ -276,6 +276,7 @@ func NewServerFromConfig() (*Server, error) {
 	tr.AddTraversalExtension(ge.NewSocketsTraversalExtension())
 	tr.AddTraversalExtension(ge.NewDescendantsTraversalExtension())
 	tr.AddTraversalExtension(ge.NewNextHopTraversalExtension())
+	tr.AddTraversalExtension(ge.NewSFlowMetricsTraversalExtension())
 
 	subscriberWSServer := ws.NewStructServer(config.NewWSServer(hserver, "/ws/subscriber", apiAuthBackend))
 	pod.NewTopologySubscriberEndpoint(subscriberWSServer, g, tr)
@@ -384,6 +385,6 @@ func init() {
 	graph.NodeMetadataDecoders["Neighbors"] = netlink.NeighborMetadataDecoder
 	graph.NodeMetadataDecoders["Metric"] = topology.InterfaceMetricMetadataDecoder
 	graph.NodeMetadataDecoders["LastUpdateMetric"] = topology.InterfaceMetricMetadataDecoder
-	graph.NodeMetadataDecoders["SFlow.Metric"] = topology.SFlowMetricMetadataDecoder
-	graph.NodeMetadataDecoders["SFlow.LastUpdateMetric"] = topology.SFlowMetricMetadataDecoder
+	graph.NodeMetadataDecoders["SFlowMetric"] = topology.SFlowMetricMetadataDecoder
+	graph.NodeMetadataDecoders["SFlowLastUpdateMetric"] = topology.SFlowMetricMetadataDecoder
 }

@@ -75,6 +75,48 @@ nodeloop:
 	return NewMetricsTraversalStep(tv.GraphTraversal, metrics)
 }
 
+// SFlowMetrics returns a Metrics step from sflow metric metadata
+func SFlowMetrics(ctx traversal.StepContext, tv *traversal.GraphTraversalV) *SFlowMetricsTraversalStep {
+	if tv.Error() != nil {
+		return NewSFlowMetricsTraversalStepFromError(tv.Error())
+	}
+
+	tv = tv.Dedup(ctx, "ID", "SFlowLastUpdateMetric.Start").Sort(ctx, common.SortAscending, "SFlowLastUpdateMetric.Start")
+	if tv.Error() != nil {
+		return NewSFlowMetricsTraversalStepFromError(tv.Error())
+	}
+
+	sflowmetrics := make(map[string][]common.Metric)
+	it := ctx.PaginationRange.Iterator()
+	gslice := tv.GraphTraversal.Graph.GetContext().TimeSlice
+
+	tv.GraphTraversal.RLock()
+	defer tv.GraphTraversal.RUnlock()
+
+nodeloop:
+	for _, n := range tv.GetNodes() {
+		if it.Done() {
+			break nodeloop
+		}
+
+		m, _ := n.GetField("SFlowLastUpdateMetric")
+		if m == nil {
+			continue
+		}
+
+		sflastMetric, ok := m.(*topology.SFlowMetric)
+		if !ok {
+			return NewSFlowMetricsTraversalStepFromError(errors.New("wrong sflow metric type"))
+		}
+
+		if gslice == nil || (sflastMetric.Start > gslice.Start && sflastMetric.Last < gslice.Last) && it.Next() {
+			sflowmetrics[string(n.ID)] = append(sflowmetrics[string(n.ID)], sflastMetric)
+		}
+	}
+
+	return NewSFlowMetricsTraversalStep(tv.GraphTraversal, sflowmetrics)
+}
+
 // Sockets returns a sockets step from host/namespace sockets
 func Sockets(ctx traversal.StepContext, tv *traversal.GraphTraversalV) *SocketsTraversalStep {
 	if tv.Error() != nil {
