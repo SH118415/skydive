@@ -81,7 +81,7 @@ func SFlowMetrics(ctx traversal.StepContext, tv *traversal.GraphTraversalV) *SFl
 		return NewSFlowMetricsTraversalStepFromError(tv.Error())
 	}
 
-	tv = tv.Dedup(ctx, "ID", "LastUpdateMetric.Start").Sort(ctx, common.SortAscending, "LastUpdateMetric.Start")
+	tv = tv.Dedup(ctx, "ID", "SFlowLastUpdateMetric.Start").Sort(ctx, common.SortAscending, "SFlowLastUpdateMetric.Start")
 	if tv.Error() != nil {
 		return NewSFlowMetricsTraversalStepFromError(tv.Error())
 	}
@@ -99,7 +99,7 @@ nodeloop:
 			break nodeloop
 		}
 
-		m, _ := n.GetField("LastUpdateMetric")
+		m, _ := n.GetField("SFlowLastUpdateMetric")
 		if m == nil {
 			continue
 		}

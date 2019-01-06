@@ -71,8 +71,8 @@ func (s *SFlowMetricsGremlinTraversalStep) Exec(last traversal.GraphTraversalSte
 	switch tv := last.(type) {
 	case *traversal.GraphTraversalV:
 		return SFlowMetrics(s.StepContext, tv), nil
-		//case *FlowTraversalStep:
-		//return tv.FlowMetrics(s.StepContext), nil
+	case *FlowTraversalStep:
+		return tv.FlowMetrics(s.StepContext), nil
 	}
 	return nil, traversal.ErrExecutionError
 }
