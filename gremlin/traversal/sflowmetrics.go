@@ -71,8 +71,6 @@ func (s *SFlowMetricsGremlinTraversalStep) Exec(last traversal.GraphTraversalSte
 	switch tv := last.(type) {
 	case *traversal.GraphTraversalV:
 		return SFlowMetrics(s.StepContext, tv), nil
-	case *FlowTraversalStep:
-		return tv.FlowMetrics(s.StepContext), nil
 	}
 	return nil, traversal.ErrExecutionError
 }
@@ -145,64 +143,9 @@ func (m *SFlowMetricsTraversalStep) Sum(ctx traversal.StepContext, keys ...inter
 	return traversal.NewGraphTraversalValue(m.GraphTraversal, total)
 }
 
-func slice1(m common.Metric, start, last int64) (common.Metric, common.Metric, common.Metric) {
-	s1, s2 := m.Split(start)
-	if s2 == nil || s2.IsZero() {
-		return s1, nil, nil
-	}
-
-	s2, s3 := s2.Split(last)
-	if s2 != nil && s2.IsZero() && m.GetStart() >= start && m.GetStart() < last {
-		// slice sflowmetric to low and became zero due to ratio. In that case use it directly.
-		return nil, m, nil
-	}
-
-	return s1, s2, s3
-}
-
-func aggregateSFlowMetrics(m []common.Metric, start, last int64, sliceLength int64, result []common.Metric) {
-	boundM, boundR := len(m)-1, len(result)
-
-	sStart, sLast := start, start+sliceLength
-
-	var i, j int
-	for j < boundR {
-		if sLast > last {
-			sLast = last
-		}
-
-		if i > boundM {
-			break
-		}
-
-		_, s2, s3 := slice1(m[i], sStart, sLast)
-		if s2 != nil {
-			if result[j] == nil {
-				result[j] = s2
-				result[j].SetStart(sStart)
-				result[j].SetLast(sLast)
-			} else {
-				result[j] = result[j].Add(s2)
-			}
-
-			if s3 != nil && !s3.IsZero() {
-				m[i] = s3
-			} else {
-				i++
-			}
-		} else {
-			sStart += sliceLength
-			sLast += sliceLength
-			j++
-		}
-	}
-
-	return
-}
-
-// Aggregatessflow merges multiple sflowmetrics array into one by summing overlapping
+// Aggregates merges multiple SFlowmetrics array into one by summing overlapping
 // metrics. It returns a unique array will all the aggregated metrics.
-func (m *SFlowMetricsTraversalStep) Aggregatessflow(ctx traversal.StepContext, s ...interface{}) *SFlowMetricsTraversalStep {
+func (m *SFlowMetricsTraversalStep) Aggregates(ctx traversal.StepContext, s ...interface{}) *SFlowMetricsTraversalStep {
 	if m.error != nil {
 		return NewSFlowMetricsTraversalStepFromError(m.error)
 	}
@@ -243,7 +186,7 @@ func (m *SFlowMetricsTraversalStep) Aggregatessflow(ctx traversal.StepContext, s
 
 	aggregated := make([]common.Metric, steps, steps)
 	for _, sflowmetrics := range m.sflowmetrics {
-		aggregateSFlowMetrics(sflowmetrics, start, last, sliceLength, aggregated)
+		aggregateMetrics(sflowmetrics, start, last, sliceLength, aggregated)
 	}
 
 	// filter out empty metrics
@@ -257,7 +200,7 @@ func (m *SFlowMetricsTraversalStep) Aggregatessflow(ctx traversal.StepContext, s
 	return NewSFlowMetricsTraversalStep(m.GraphTraversal, map[string][]common.Metric{"Aggregated": final})
 }
 
-// Values returns the graph metric values
+// Values returns the graph sflowmetric values
 func (m *SFlowMetricsTraversalStep) Values() []interface{} {
 	if len(m.sflowmetrics) == 0 {
 		return []interface{}{}

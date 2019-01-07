@@ -1078,6 +1078,10 @@ func (a *AggregatesGremlinTraversalStep) Exec(last traversal.GraphTraversalStep)
 	case *MetricsTraversalStep:
 		mts := last.(*MetricsTraversalStep)
 		return mts.Aggregates(a.StepContext, a.Params...), nil
+
+	case *SFlowMetricsTraversalStep:
+		mts := last.(*SFlowMetricsTraversalStep)
+		return mts.Aggregates(a.StepContext, a.Params...), nil
 	}
 
 	return nil, traversal.ErrExecutionError
