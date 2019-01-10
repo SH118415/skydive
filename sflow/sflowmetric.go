@@ -57,17 +57,17 @@ func (sf *SFlow) GetField(key string) (interface{}, error) {
 		return sf.Counters, nil
 	}
 
-	return nil, nil
+	return nil, common.ErrFieldNotFound
 }
 
 // GetFieldString implements Getter interface
 func (sf *SFlow) GetFieldString(key string) (string, error) {
-	return "", nil
+	return "", common.ErrFieldNotFound
 }
 
 // GetFieldInt64 implements Getter interface
 func (sf *SFlow) GetFieldInt64(key string) (int64, error) {
-	return 0, nil
+	return 0, common.ErrFieldNotFound
 }
 
 // GetFieldKeys implements Getter and SFlowMetrics interfaces
