@@ -36,7 +36,7 @@ type SFlow struct {
 	LastUpdateMetric *SFMetric                   `json:"LastUpdateMetric,omitempty"`
 }
 
-//SFlowMetadataDecoder implements a json message raw decoder
+//SFMetadataDecoder implements a json message raw decoder
 func SFMetadataDecoder(raw json.RawMessage) (common.Getter, error) {
 	var sf SFlow
 	if err := json.Unmarshal(raw, &sf); err != nil {
