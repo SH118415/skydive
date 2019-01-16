@@ -146,7 +146,7 @@ func ToFloat64(f interface{}) (float64, error) {
 		}
 	case string:
 		return strconv.ParseFloat(v, 64)
-	case int, uint, int32, uint32, int64, uint64:
+	case int, uint, int8, uint8, int16, uint16, int32, uint32, int64, uint64:
 		i, err := ToInt64(f)
 		if err != nil {
 			return 0, err
@@ -191,9 +191,13 @@ func CrossTypeCompare(a interface{}, b interface{}) (int, error) {
 	case float32, float64:
 		return floatCompare(a, b)
 	}
-
 	switch a.(type) {
-	case int, uint, int32, uint32, int64, uint64:
+	case int, uint, int8, uint8, int16, uint16, int32, uint32, int64, uint64:
+		return integerCompare(a, b)
+	}
+
+	switch b.(type) {
+	case int, uint, int8, uint8, int16, uint16, int32, uint32, int64, uint64:
 		return integerCompare(a, b)
 	default:
 		return 0, ErrCantCompareInterface
