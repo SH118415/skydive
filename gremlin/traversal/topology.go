@@ -35,7 +35,7 @@ import (
 )
 
 // InterfaceMetrics returns a Metrics step from interface metric metadata
-func InterfaceMetrics(ctx traversal.StepContext, tv *traversal.GraphTraversalV) *MetricsTraversalStep {
+func InterfaceMetrics(ctx traversal.StepContext, tv *traversal.GraphTraversalV, key string) *MetricsTraversalStep {
 	if tv.Error() != nil {
 		return NewMetricsTraversalStepFromError(tv.Error())
 	}

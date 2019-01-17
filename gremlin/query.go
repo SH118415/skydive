@@ -188,7 +188,7 @@ func (q QueryString) BothV() QueryString {
 }
 
 // Metrics append a Metrics() operation to query
-func (q QueryString) Metrics() QueryString {
+func (q QueryString) Metrics(string) QueryString {
 	return q.newQueryString("Metrics")
 }
 
